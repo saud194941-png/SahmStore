@@ -155,7 +155,8 @@ export const useGameStore = create<GameState>()(
       capital: state.capital - region.cost,
       regions: state.regions.map(r => r.id === regionId ? { ...r, owned: true } : r)
     }
-  }),
+  }
+),
 
   nextDay: () => set((state) => {
     let dailyProfit = 0;
@@ -221,12 +222,14 @@ export const useGameStore = create<GameState>()(
     const newTotalProfits = state.totalProfits + dailyProfit;
     const newCapital = state.capital + netProfit;
 
-    if (newTotalProfits >= 1000 && state.level === 1) {
-       toast.success('إنجاز جديد: التاجر الصغير! تم فتح مستوى 2 🏅');
-       state.level = 2;
-       state.levelName = 'متجر حي';
-    }
+let newLevel = state.level;
+let newLevelName = state.levelName;
 
+if (newTotalProfits >= 1000 && state.level === 1) {
+  toast.success('إنجاز جديد: التاجر الصغير! تم فتح مستوى 2 🏅');
+  newLevel = 2;
+  newLevelName = 'متجر حي';
+}
     return {
       day: state.day + 1,
       season: currentSeason,
@@ -236,12 +239,20 @@ export const useGameStore = create<GameState>()(
       customersToday: Math.floor(Math.random() * 50 * globalDemand) + 10,
       products: updatedProducts,
       loan: newLoan,
-      level: state.level,
-      levelName: state.levelName,
-      history: [...state.history, { day: state.day + 1, profit: dailyProfit, capital: newCapital }]
+      level: newLevel,
+      levelName: newLevelName,
+      history: [
+        ...state.history,
+        {
+          day: state.day + 1,
+          profit: dailyProfit,
+          capital: newCapital
+        }
+      ]
     };
   })
-  , {
-    name: 'sahm-store-storage',
-  }
+}),
+{
+  name: 'sahm-store-storage',
+}
 ));
